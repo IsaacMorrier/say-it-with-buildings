@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letter Canvas</title>
+    <style>
+        body {
+            background: #fd5f2cff;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            text-align: center;
+            font-family: "UnifrakturCook", cursive;
+            font-weight: 700;
+            font-style: normal;
+            height: 97vh;
+            padding: 0;
+        }
+        #controls-container {
+            flex-shrink: 1;
+            margin: 0 auto;
+            max-width: 1100px;
+        }
+        #page-container {
+            flex-grow: 1;
+            width: 100%;
+            margin: 0 auto;
+            max-width: 1100px;
+            overflow: auto;
+        }
+        h1 {
+            margin-top: 0;
+        }
+        textarea {
+            width: 80%;
+            height: 100px;
+            text-align: center;
+        }
+        input, textarea {
+            border: 2px solid black;
+            margin-bottom: 12px;
+        }
+        button {
+            position:relative;
+            margin-left: 12px;
+            top:-4px;
+            font-family: "UnifrakturCook", cursive;
+            background-color: black;
+            border: 6px solid black;
+            border-radius: 4px;
+            color: white;
+            padding: 0 20px;
+        }
+        #letter-container {
+            background-color: white;
+            border: 2px solid black;
+            box-sizing: border-box;
+            
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            
+            margin: 0 auto;
+            max-height: 100%;
+            max-width: 100%;
+            overflow: hidden;
+        }
+        #letter-wrapper {
+            /* border: 1px solid red; */
+            display: flex;
+            flex-direction: column;
+            /* margin-right: 2%; */
+            overflow: hidden;
+            width: 90%;
+            padding: 0;
+        }
+        .line {
+            /* border: 1px solid green; */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 1.5% 0;
+            padding: 0;
+        }
+        .line img {
+            max-width: 100%;
+            max-height: 100%;
+            overflow: auto
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #letter-container, #letter-container * {
+                visibility: visible;
+            }
+            #letter-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                border: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="controls-container">
+        <h1>⚠️ For Jessica&rsquo;s Use Only ⚠️</h1>
+        <p>Type your text (A-Z) and<br>say it with buildings:</p>
+        <textarea id="text-input">JESSICA
+ROCKS</textarea>
+    <br>
+        <label for="height-input" style="margin-left:6px">Height (inches): </label>&nbsp;<input type="number" id="height-input" value="8.5" style="margin-right:6px">
+        <label for="width-input" style="margin-left:6px">Width (inches): </label>&nbsp;<input type="number" id="width-input" value="11" style="margin-right:6px">
+        <br>
+        <label for="scale-slider">Font Size: </label>
+        <input type="range" id="scale-slider" min="20" max="100" step="1" value="90">
+        <button onClick="window.print()">Print</button>
+    </div>
+    <div id="page-container">
+        <div id="letter-container">
+            <div id="letter-wrapper">
+        </div>
+    </div>
+    <script>
+        const letterContainer = document.getElementById('letter-container');
+        const letterWrapper = document.getElementById('letter-wrapper');
+        const textInput = document.getElementById('text-input');
+        const widthInput = document.getElementById('width-input');
+        const heightInput = document.getElementById('height-input');
+        const scaleSlider = document.getElementById('scale-slider');
+
+        function updateContainerSize() {
+            
+            const width = widthInput.value;
+            const height = heightInput.value;
+
+            letterContainer.style.aspectRatio = `${width} / ${height}`;
+            updateWrapperText();
+        }
+
+        function updateWrapperText() {
+            letterWrapper.innerHTML = '';
+            const text = textInput.value.toUpperCase();
+            const lines = text.split('\n');
+            const gap = 3;
+
+            lines.forEach(line => {
+                const lineDiv = document.createElement('div');
+                lineDiv.className = 'line';
+                for (let char of line) {
+                    if (char >= 'A' && char <= 'Z') {
+                        const img = document.createElement('img');
+                        img.src = `img/${char}.jpg`;
+                        img.alt = char;
+                        lineDiv.appendChild(img);
+                    }
+                    else {
+                        const space = document.createElement('div');
+                        space.style.width = `${gap }%`;
+                        lineDiv.appendChild(space);
+                    }
+                };
+                letterWrapper.appendChild(lineDiv);
+            });
+        }
+
+        function updateScale() {
+            const scale = scaleSlider.value;
+            letterWrapper.style.width = `${scale}%`;
+        }
+
+        textInput.addEventListener('input', updateWrapperText);
+        widthInput.addEventListener('input', updateContainerSize);
+        heightInput.addEventListener('input', updateContainerSize);
+        scaleSlider.addEventListener('input', updateScale);
+
+        // Initialize container size
+        updateContainerSize();
+    </script>
+</body>
+</html>
